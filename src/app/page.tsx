@@ -1,95 +1,118 @@
-import Image from "next/image";
+"use client";
+import React, { useState } from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import UserForm from "./components/form";
+import UserTable from "./components/table";
 import styles from "./page.module.css";
+import { getRandomString, User } from "./utils/config";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+import DeleteConfirmationModal from "./components/alertDialog";
+const MainPage: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    userId?: number | string | null;
+  }>({ isOpen: false });
 
-export default function Home() {
+  const handleToggleModal = (userData?: User | undefined) => {
+    setIsModalOpen((prevState) => !prevState);
+    setFormData(userData || null);
+  };
+  console.log("varshhhh");
+
+  const handleAddUser = (userData: User) => {
+    if (userData?.id) {
+      setUsers((prevState) =>
+        prevState.map((user) => {
+          if (user.id === userData.id) {
+            return userData;
+          }
+          return user;
+        })
+      );
+    } else {
+      const newUser = { ...userData, id: getRandomString(8) };
+      setUsers([...users, newUser]);
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteUser = (userId: string | number | null) => {
+    console.log("Deleting user with ID:", userId);
+    setDeleteConfirmation({ isOpen: true, userId });
+  };
+  const confirmDelete = () => {
+    console.log("Deleting user:", deleteConfirmation);
+    if (deleteConfirmation.userId !== undefined) {
+      console.log("Users before deletion:", users);
+      setUsers(users.filter((user) => user.id !== deleteConfirmation.userId));
+      console.log("Users after deletion:", users);
+    }
+    setDeleteConfirmation({ isOpen: false });
+  };
+
+  const handleEditUser = (userData: User) => {
+    setEditingUser(userData);
+    setIsModalOpen(true);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div className={styles.main}>
+      <div className={styles.header}>
+        <h1>User list</h1>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={() => handleToggleModal()}
+        >
+          Add
+        </Button>
       </div>
+      <UserTable
+        userList={users as any}
+        onDelete={handleDeleteUser}
+        onEdit={handleEditUser as any}
+      />
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+      <Dialog
+        open={isModalOpen}
+        onClose={() => handleToggleModal()}
+        maxWidth="md"
+        fullWidth
+        // BackdropProps={{ invisible: true }}
+        BackdropProps={{ invisible: true }}
+      >
+        <IconButton
+          aria-label="close"
+          onClick={() => handleToggleModal()}
+          sx={{
+            position: "absolute",
+            right: 24,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
         >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+          <CloseIcon />
+        </IconButton>
+        <DialogContent>
+          <UserForm onSubmit={handleAddUser as any} user={editingUser as any} />
+        </DialogContent>
+      </Dialog>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <DeleteConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() => setDeleteConfirmation({ isOpen: false })}
+        onDelete={confirmDelete}
+      />
+    </div>
   );
-}
+};
+
+export default MainPage;

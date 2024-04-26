@@ -1,0 +1,30 @@
+{
+  "name": {
+    "minCharacters": 2,
+    "maxCharacters": 50
+  },
+  "email": {
+    "required": true
+  },
+  "linkedinUrl": {
+    "required": true
+  },
+  "address": {
+    "line1": {
+      "required": true
+    },
+    "line2": {
+      "required": false
+    },
+    "state": {
+      "required": true
+    },
+    "city": {
+      "required": true
+    },
+    "pin": {
+      "required": true
+    }
+  },
+  "editable": true
+}
