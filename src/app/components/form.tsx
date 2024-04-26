@@ -26,7 +26,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit }) => {
     name: "",
     email: "",
     linkedinUrl: "",
-    gender: "",
+    gender: "male",
     address: {
       line1: "",
       line2: "",
@@ -77,7 +77,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit }) => {
       name: "",
       email: "",
       linkedinUrl: "",
-      gender: "",
+      gender: "male",
       address: {
         line1: "",
         line2: "",
@@ -155,7 +155,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit }) => {
       </div>
 
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <div className="form-header">State</div>
           <TextField
             select
@@ -174,7 +174,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit }) => {
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <div className="form-header">City</div>
           <TextField
             select
@@ -199,7 +199,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit }) => {
 
       <div className="form-header">Pin Code</div>
       <Grid container spacing={2} style={{ paddingBottom: 60 }}>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             label="PIN"
             name="pin"
